@@ -1,0 +1,41 @@
+services:
+  mysqldb:
+    image: mysql:8
+    container_name: mysql-crmdb
+    environment:
+      MYSQL_ROOT_PASSWORD: docker
+      MYSQL_DATABASE: projectcrm_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - springbootcrm-mysql-net
+
+  backend:
+    image: gowthamsaikorada/dockercrm-backend:latest
+    container_name: springbootcrm
+    ports:
+      - "2021:2020"
+    depends_on:
+      - mysqldb
+    restart: on-failure
+    networks:
+      - springbootcrm-mysql-net
+
+  frontend:
+    image: gowthamsaikorada/dockercrm-frontend:latest
+    container_name: reactcrm
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: on-failure
+    networks:
+      - springbootcrm-mysql-net
+
+volumes:
+  mysql_data:
+
+networks:
+  springbootcrm-mysql-net:
